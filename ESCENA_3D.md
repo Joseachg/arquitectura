@@ -2,6 +2,18 @@
 
 La página estática en `docs/index.html` representa exclusivamente el diagrama de la sección 2 de `ENTREGA_ACTIVIDAD.md`: navegador, controlador y presentación, servicio, repositorio y memoria. Los cuatro últimos componentes se señalan dentro del mismo proceso Flask.
 
+La arquitectura se cuenta como una oficina de reservas con cuatro personajes y un archivador:
+
+| Elemento de la escena | Componente real | Acción |
+| --- | --- | --- |
+| Cliente | Navegador | Lleva el formulario y recibe la respuesta |
+| Recepcionista | Controlador y presentación en `app.py` | Recibe, delega y prepara la página |
+| Encargada | Servicio en `servicio.py` | Valida y decide si procede la reserva |
+| Archivista | Repositorio en `repositorio.py` | Consulta los datos y registra la reserva |
+| Archivador | `CUPOS` y `RESERVAS` en memoria | Conserva los datos; no decide ni actúa como otro servicio |
+
+Los personajes caminan, entregan documentos y gesticulan. El archivista se acerca al mueble y abre un cajón para consultar o guardar. Los diálogos y la explicación lateral conectan estas acciones con el código; son una metáfora didáctica, no nuevos componentes de software.
+
 ## Explorar
 
 - Arrastrar la escena gira la cámara; los botones permiten girar, acercar, alejar y restablecer la vista.
@@ -27,10 +39,12 @@ En el repositorio `Joseachg/arquitectura`, abrir **Settings → Pages**. En **Bu
 
 La dirección esperada es <https://joseachg.github.io/arquitectura/>. Esa dirección solo estará disponible después de publicar los archivos y completar el despliegue de Pages.
 
-**Estado comprobado el 12 de octubre de 2026:** la escena se subió a `main`, pero GitHub rechazó la activación de Pages (HTTP 422): el plan actual no admite Pages para este repositorio privado. Para completar la publicación se necesita autorizar que el repositorio completo pase a público o contar con un plan compatible con Pages en repositorios privados. La visibilidad del repositorio se conserva privada.
+**Estado comprobado:** el repositorio ya es público y Pages está configurado para servir `main` desde `/docs`. Su dirección es <https://joseachg.github.io/arquitectura/>.
 
 ## Implementación y verificación
 
-HTML, CSS con perspectiva y transformaciones 3D, y JavaScript sin dependencias de compilación. Las fuentes web son opcionales; si no cargan, se usan fuentes del sistema. Los enlaces a recursos son relativos para funcionar bajo `/arquitectura/`.
+HTML, CSS y JavaScript con una escena WebGL en Three.js **0.186.1**, versión verificada en el registro npm. Los modelos se construyen con geometría dentro de `office.js`; no se descargan modelos de personajes. La biblioteca, OrbitControls y su licencia MIT están incluidos en `docs/vendor`, con archivos de esa misma versión. El sitio no necesita compilación ni un servidor Python en GitHub Pages. Las fuentes web son opcionales y todos los recursos de la escena usan rutas relativas para funcionar bajo `/arquitectura/`.
 
-Verificación local con Chromium: cuatro escenarios completos (HTTP 201, 400, 409 y 404), cupos y reservas esperados, reproducción y pausa, reinicio, controles de cámara y ausencia de desbordamiento horizontal en escritorio (1440 px) y móvil (390 px). También se inspeccionaron capturas de ambas vistas. El modo de movimiento reducido evita el desplazamiento animado del mensaje y conserva el recorrido por pasos.
+`simulation.js` conserva el recorrido del caso de uso; `scene.js` controla la interfaz y la reproducción; `office.js` construye y anima la maqueta. La pausa detiene el recorrido y los personajes, y el modo de movimiento reducido conserva los pasos sin desplazamientos animados. Si WebGL no está disponible, se muestra un aviso y se puede seguir usando el recorrido textual.
+
+Verificación local con Chromium: cuatro escenarios completos (HTTP 201, 400, 409 y 404), cupos y reservas esperados, reproducción y pausa, reinicio, controles de cámara y ausencia de desbordamiento horizontal en escritorio (1440 px) y móvil (390 px). También se inspeccionaron capturas de ambas vistas y del archivista consultando el cajón. Se comprobó mediante capturas que los personajes se mueven, quedan congelados al pausar y reanudan la animación; se verificó también la selección de personajes y el recorrido textual en un navegador con WebGL desactivado.

@@ -7,22 +7,22 @@
   <title>Una reserva por dentro · Arquitectura 3D</title>
   <link rel="stylesheet" href="./styles.css">
   <script src="./simulation.js" defer></script>
-  <script src="./scene.js" defer></script>
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+  <script type="module" src="./scene.js"></script>
 </head>
 <body>
   <header class="header"><a class="brand" href="./"><span class="brand-mark">A<span>3</span></span> Arquitectura en escena</a><span class="course">AIS86 <span>/</span> MVC + capas</span></header>
   <main>
-    <section class="intro"><div><p class="eyebrow">EXPLORADOR INTERACTIVO · 01</p><h1>Una reserva,<br><em>por dentro.</em></h1></div><p class="lead">Sigue una solicitud desde el navegador hasta la memoria. Descubre quién recibe, quién decide y quién guarda.</p></section>
+    <section class="intro"><div><p class="eyebrow">UN DIAGRAMA QUE COBRA VIDA</p><h1>Una reserva,<br><em>en escena.</em></h1></div><p class="lead">Entra en una pequeña oficina de reservas. Sus personajes reciben, revisan y guardan tu solicitud: cada uno representa una parte de la arquitectura.</p></section>
     <section class="workspace" aria-label="Explorador de arquitectura">
       <div class="visual-column">
-        <div class="stage" id="stage" aria-label="Escena tridimensional de la arquitectura. Arrastra para girar; usa los botones de componentes para inspeccionarlos.">
-          <div class="stage-heading"><span class="live-dot"></span> ESCENA 3D <span class="stage-hint">Arrastra para girar</span></div>
-          <div class="world" id="world">
-            <div class="floor"></div><div class="process-boundary"><span>UN SOLO PROCESO FLASK</span></div>
-            <div class="connections" id="connections"></div><div id="nodes"></div><div class="packet" id="packet" hidden></div>
-          </div>
+        <div class="stage office-stage" id="stage" aria-label="Oficina tridimensional de reservas con cuatro personajes. Arrastra para girar y selecciona un personaje para conocer su función.">
+          <div class="stage-heading"><span class="live-dot"></span> OFICINA DE RESERVAS <span class="stage-hint">Arrastra para girar · rueda para acercar</span></div>
+          <div id="office" class="office-canvas"></div>
+          <div class="scene-loading" id="scene-loading">Preparando la oficina…</div>
+          <div class="speech-bubble" id="speech" hidden><span id="speech-role"></span><strong id="speech-text"></strong></div>
           <div class="view-controls" aria-label="Controles de cámara"><button id="rotate-left" aria-label="Girar a la izquierda">↶</button><button id="rotate-right" aria-label="Girar a la derecha">↷</button><button id="zoom-out" aria-label="Alejar">−</button><button id="zoom-in" aria-label="Acercar">+</button><button id="reset-view">Restablecer vista</button></div>
-          <div class="stage-footer"><span><i class="legend-line"></i> Recorrido de la solicitud</span><span><i class="legend-packet"></i> Mensaje en tránsito</span></div>
+          <div class="stage-footer"><span><i class="legend-packet"></i> El documento representa la solicitud o respuesta</span><span>4 personajes · 1 archivo</span></div>
         </div>
         <nav class="component-tabs" id="component-tabs" aria-label="Inspeccionar componentes"></nav>
         <div class="detail"><div><p class="eyebrow" id="detail-file">CLIENTE WEB</p><h2 id="detail-title">Navegador</h2></div><p id="detail-description">Envía el formulario y muestra el HTML que devuelve Flask.</p></div>
@@ -33,16 +33,16 @@
         <select id="scenario"><option value="valid">Reserva válida</option><option value="invalid">Nombre inválido</option><option value="full">Sin cupos</option><option value="unknown">Turno inexistente</option></select>
         <div class="request"><span>POST <b>/reservar</b></span><code id="request-data"></code></div>
         <div class="stats"><div><span>Cupos</span><strong id="cups">2</strong></div><div><span>Reservas</span><strong id="reservations">0</strong></div><div><span>HTTP</span><strong id="http">—</strong></div></div>
-        <div class="step-display" aria-live="polite" aria-atomic="true"><span class="step-count" id="step-count">LISTO PARA EXPLORAR</span><h3 id="step-title">Todo empieza en el navegador</h3><p id="step-description">Pulsa Reproducir o avanza paso a paso para seguir una solicitud.</p></div>
+        <div class="step-display" aria-live="polite" aria-atomic="true"><span class="step-count" id="step-count">LISTO PARA EXPLORAR</span><h3 id="step-title">El cliente llega con su solicitud</h3><p id="step-description">Pulsa Reproducir para ver cómo los personajes trabajan, o recorre la historia paso a paso.</p></div>
         <div class="playback"><button class="primary" id="play">▶ Reproducir</button><button id="next" aria-label="Avanzar un paso">Paso →</button><button id="restart" aria-label="Reiniciar simulación">↺</button></div>
         <label class="speed" for="speed">Velocidad <input id="speed" type="range" min="0.5" max="2" step="0.5" value="1"><output id="speed-value">1×</output></label>
         <ol class="timeline" id="timeline" aria-label="Pasos del recorrido"></ol>
-        <p class="simulation-note">Simulación didáctica del código. Cada caso inicia con su propio estado; no envía reservas reales.</p>
+        <p class="simulation-note">Los personajes son una metáfora de las capas del código. Cada caso reinicia sus datos; no envía reservas reales.</p>
       </aside>
     </section>
     <section class="architecture-note"><span class="note-index">01—05</span><div><h2>Capas distintas. Un mismo proceso.</h2><p>El controlador, el servicio y el repositorio tienen responsabilidades separadas, pero se ejecutan juntos en Flask. Los cupos y las reservas viven en memoria y se reinician con la aplicación.</p></div><span class="architecture-tag">MONOLITO EN CAPAS<br><b>MVC simplificado</b></span></section>
   </main>
-  <footer>Basado en el diagrama de arquitectura aplicada de <a href="https://github.com/Joseachg/arquitectura/blob/main/ENTREGA_ACTIVIDAD.md">ENTREGA_ACTIVIDAD.md ↗</a><span>HTML · CSS 3D · JavaScript</span></footer>
+  <footer>Basado en el diagrama de arquitectura aplicada de <a href="https://github.com/Joseachg/arquitectura/blob/main/ENTREGA_ACTIVIDAD.md">ENTREGA_ACTIVIDAD.md ↗</a><span>Escena WebGL · Personajes 3D · MVC + capas</span></footer>
   <noscript>Activa JavaScript para explorar la escena y simular el recorrido.</noscript>
 </body>
 </html>
