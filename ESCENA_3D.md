@@ -27,6 +27,8 @@ En el repositorio `Joseachg/arquitectura`, abrir **Settings → Pages**. En **Bu
 
 La dirección esperada es <https://joseachg.github.io/arquitectura/>. Esa dirección solo estará disponible después de publicar los archivos y completar el despliegue de Pages.
 
+**Estado comprobado el 12 de octubre de 2026:** la escena se subió a `main`, pero GitHub rechazó la activación de Pages (HTTP 422): el plan actual no admite Pages para este repositorio privado. Para completar la publicación se necesita autorizar que el repositorio completo pase a público o contar con un plan compatible con Pages en repositorios privados. La visibilidad del repositorio se conserva privada.
+
 ## Implementación y verificación
 
 HTML, CSS con perspectiva y transformaciones 3D, y JavaScript sin dependencias de compilación. Las fuentes web son opcionales; si no cargan, se usan fuentes del sistema. Los enlaces a recursos son relativos para funcionar bajo `/arquitectura/`.
