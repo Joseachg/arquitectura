@@ -5,6 +5,9 @@ Abre: http://127.0.0.1:5000
 """
 from flask import Flask, request, render_template_string
 
+from repositorio import RepositorioReservasMemoria
+from servicio import EstadoReserva, ServicioReservas
+
 
 PAGINA = """
 <!doctype html>
@@ -23,59 +26,46 @@ PAGINA = """
 </html>
 """
 
+RESPUESTAS = {
+    EstadoReserva.NOMBRE_INVALIDO: (400, "Escribe un nombre de al menos 2 caracteres."),
+    EstadoReserva.TURNO_INEXISTENTE: (404, "El turno no existe."),
+    EstadoReserva.SIN_CUPOS: (409, "No quedan cupos."),
+}
+
 
 def crear_app():
     app = Flask(__name__)
     # Datos en memoria para que la práctica no requiera configurar una BD.
     app.config["CUPOS"] = {"almuerzo": 2}
     app.config["RESERVAS"] = []
+    repositorio = RepositorioReservasMemoria(
+        app.config["CUPOS"], app.config["RESERVAS"]
+    )
+    servicio = ServicioReservas(repositorio)
 
     @app.get("/")
     def inicio():
         return render_template_string(
             PAGINA,
-            cupos=app.config["CUPOS"]["almuerzo"],
+            cupos=servicio.cupos_disponibles("almuerzo"),
             mensaje="",
         )
 
     @app.post("/reservar")
     def reservar():
-        # CONTROLADOR SOBRECARGADO: aquí se mezclan responsabilidades.
-        nombre = request.form.get("nombre", "").strip()
+        nombre = request.form.get("nombre", "")
         turno = request.form.get("turno", "")
-
-        # Validación de formato de la entrada.
-        if len(nombre) < 2:
-            return render_template_string(
-                PAGINA, cupos=app.config["CUPOS"]["almuerzo"],
-                mensaje="Escribe un nombre de al menos 2 caracteres.",
-            ), 400
-
-        # Búsqueda de datos / persistencia en memoria.
-        cupos = app.config["CUPOS"].get(turno)
-        if cupos is None:
-            return render_template_string(
-                PAGINA, cupos=app.config["CUPOS"]["almuerzo"],
-                mensaje="El turno no existe.",
-            ), 404
-
-        # Regla del negocio: no reservar si no quedan cupos.
-        if cupos <= 0:
-            return render_template_string(
-                PAGINA, cupos=app.config["CUPOS"]["almuerzo"],
-                mensaje="No quedan cupos.",
-            ), 409
-
-        # Actualización de datos.
-        app.config["CUPOS"][turno] -= 1
-        app.config["RESERVAS"].append({"nombre": nombre, "turno": turno})
-
-        # Presentación de la respuesta.
+        resultado = servicio.reservar(nombre, turno)
+        if resultado.estado == EstadoReserva.CONFIRMADA:
+            estado_http = 201
+            mensaje = f"Reserva confirmada para {resultado.nombre}."
+        else:
+            estado_http, mensaje = RESPUESTAS[resultado.estado]
         return render_template_string(
             PAGINA,
-            cupos=app.config["CUPOS"]["almuerzo"],
-            mensaje=f"Reserva confirmada para {nombre}.",
-        ), 201
+            cupos=servicio.cupos_disponibles("almuerzo"),
+            mensaje=mensaje,
+        ), estado_http
 
     return app
 
